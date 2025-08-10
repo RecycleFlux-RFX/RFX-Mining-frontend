@@ -19,7 +19,7 @@ const RecycleRush = () => {
     const gameAreaRef = useRef(null);
     const itemIdCounter = useRef(0);
     const navigate = useNavigate();
-    const gameId = '688d176754cb10bba40ace6d';
+    const gameId = '68970715fa3ee02bd49317fe';
     const BASE_URL = 'https://rfx-mining-app.onrender.com';
 
     const wasteItems = [
