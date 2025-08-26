@@ -5,7 +5,7 @@ import {
     Recycle, Trophy, Star, TrendingUp, Send, Users, Gift, Eye, Search, EyeOff, Coins
 } from 'lucide-react';
 import { ethers } from 'ethers';
-import RFXTokenAbi from '../../abi/RFXToken.json'; // adjust path to your ABI
+import RFXTokenAbi from '../../abi/RFXFaucet.json'; // adjust path to your ABI
 
 export default function RFXWalletPage() {
     const location = useLocation();
