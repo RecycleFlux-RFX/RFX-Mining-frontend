@@ -4,7 +4,7 @@ import {
     Home, MapPin, Gamepad2, Wallet, Settings, Plus, Minus,
     Recycle, Trophy, Star, TrendingUp, Send, Users, Gift, Eye, Search, EyeOff, Coins
 } from 'lucide-react';
-import { ethers } from 'ethers';
+import { BrowserProvider, Contract, formatUnits } from "ethers";
 import RFXTokenAbi from '../../abi/RFXFaucet.json'; // adjust path to your ABI
 
 export default function RFXWalletPage() {
@@ -141,37 +141,42 @@ export default function RFXWalletPage() {
     };
 
     // --- CLAIM FUNCTION ---
-    const claimDailyRFX = async () => {
-        try {
-            if (!window.ethereum) {
-                alert('Please install MetaMask!');
-                return;
-            }
-
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            await provider.send("eth_requestAccounts", []);
-            const signer = await provider.getSigner();
-
-            const contractAddress = '0x36A80187397Fa5Fe3cc17061C6cE8E0c1e210C4c'; // replace with your deployed RFX contract
-            const rfxContract = new ethers.Contract(contractAddress, RFXTokenAbi.abi, signer);
-
-            setClaiming(true);
-            const tx = await rfxContract.claim();
-            await tx.wait();
-
-            alert('RFX claimed successfully!');
-            setClaiming(false);
-
-            // Update balance after claim
-            const balance = await rfxContract.balanceOf(await signer.getAddress());
-            setWalletBalance(parseFloat(ethers.formatUnits(balance, 18)));
-
-        } catch (error) {
-            console.error(error);
-            alert('Claim failed: ' + (error?.data?.message || error.message));
-            setClaiming(false);
+   const claimDailyRFX = async () => {
+    try {
+        if (!window.ethereum) {
+            alert("Please install MetaMask!");
+            return;
         }
-    };
+
+        // Create provider & signer
+        const provider = new BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+
+        // Create contract instance
+        const contractAddress = "0x36A80187397Fa5Fe3cc17061C6cE8E0c1e210C4c"; // your deployed faucet contract
+        const rfxContract = new Contract(contractAddress, RFXTokenAbi.abi, signer);
+
+        setClaiming(true);
+
+        // Call claim()
+        const tx = await rfxContract.claim();
+        await tx.wait();
+
+        alert("RFX claimed successfully!");
+
+        // Fetch new balance
+        const balance = await rfxContract.balanceOf(await signer.getAddress());
+        setWalletBalance(parseFloat(formatUnits(balance, 18)));
+
+    } catch (error) {
+        console.error(error);
+        alert("Claim failed: " + (error?.data?.message || error.message));
+    } finally {
+        setClaiming(false);
+    }
+};
+
 
     return (
         <div className="w-full min-h-screen bg-gradient-to-br from-black via-gray-900 to-black overflow-hidden relative">
